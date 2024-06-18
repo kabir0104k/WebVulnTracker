@@ -89,6 +89,38 @@
             color: #ff0000;
             text-shadow: 0 0 10px #000000;
         }
+        .detail-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000000;
+            padding: 20px;
+            border: 2px solid #00ff99;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 153, 0.2);
+            max-width: 500px;
+            width: 90%;
+            z-index: 1000;
+        }
+        .detail-popup textarea {
+            width: 100%;
+            height: 200px;
+            background: #000000;
+            color: #ffffff;
+            border: 1px solid #00ff99;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .detail-popup button {
+            font-size: 1em;
+            padding: 10px 20px;
+            background: #ff0000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -104,164 +136,170 @@
             <!-- Vulnerabilities will be inserted here -->
         </ul>
     </div>
+
+    <div class="detail-popup" id="detail-popup">
+        <textarea id="detail-content"></textarea>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
     <script>
         const vulnerabilities = {
             "Injection Vulnerabilities": [
-                "SQL Injection",
-                "Cross-Site Scripting (XSS)",
-                "Cross-Site Request Forgery (CSRF)",
-                "Remote Code Execution (RCE)",
-                "Command Injection",
-                "XML Injection",
-                "LDAP Injection",
-                "XPath Injection",
-                "HTML Injection",
-                "Server-Side Includes (SSI) Injection",
-                "OS Command Injection",
-                "Blind SQL Injection",
-                "Server-Side Template Injection (SSTI)"
+                { name: "SQL Injection", details: "SQL injection is a web security vulnerability that allows an attacker to interfere with the queries that an application makes to its database. It generally allows an attacker to view data that they are not normally able to retrieve." },
+                { name: "Cross-Site Scripting (XSS)", details: "Cross-Site Scripting (XSS) is a type of injection attack in which malicious scripts are injected into otherwise benign and trusted websites. XSS attacks occur when an attacker uses a web application to send malicious code, generally in the form of a browser side script, to a different end user." },
+                { name: "Cross-Site Request Forgery (CSRF)", details: "Cross-Site Request Forgery (CSRF) is an attack that forces an end user to execute unwanted actions on a web application in which they are currently authenticated." },
+                { name: "Remote Code Execution (RCE)", details: "Remote Code Execution (RCE) is an attack where an attacker can execute malicious code remotely on a computer." },
+                { name: "Command Injection", details: "Command Injection is an attack in which the goal is execution of arbitrary commands on the host operating system via a vulnerable application." },
+                { name: "XML Injection", details: "XML Injection is an attack technique used to manipulate or compromise the logic of an XML application or service." },
+                { name: "LDAP Injection", details: "LDAP Injection is a type of attack that exploits vulnerabilities in applications that construct LDAP statements based on user input." },
+                { name: "XPath Injection", details: "XPath Injection is an attack where malicious input is used to alter the structure of an XPath query." },
+                { name: "HTML Injection", details: "HTML Injection is an attack where malicious HTML is inserted into a web page." },
+                { name: "Server-Side Includes (SSI) Injection", details: "SSI Injection is an attack technique that allows an attacker to send code to a web application and have the web server execute that code." },
+                { name: "OS Command Injection", details: "OS Command Injection is an attack in which the attacker attempts to execute arbitrary commands on the host operating system via a vulnerable application." },
+                { name: "Blind SQL Injection", details: "Blind SQL Injection is a type of SQL Injection where the attacker cannot see the result of the injection in the web application but can infer the result based on the application's behavior." },
+                { name: "Server-Side Template Injection (SSTI)", details: "Server-Side Template Injection (SSTI) is an attack that allows an attacker to inject code into a server-side template." }
             ],
             "Broken Authentication and Session Management": [
-                "Credential Reuse",
-                "Cookie Theft",
-                "Insecure Authentication",
-                "Weak Password Storage",
-                "Password Cracking",
-                "Session Hijacking",
-                "Brute Force Attack",
-                "Session Fixation"
+                { name: "Credential Reuse", details: "Credential reuse is when the same login credentials are used across multiple systems. If one system is compromised, all systems with reused credentials can be compromised." },
+                { name: "Cookie Theft", details: "Cookie theft is an attack where an attacker steals a user's session cookie to impersonate the user on a web application." },
+                { name: "Insecure Authentication", details: "Insecure authentication is when a web application has weak authentication mechanisms that can be easily bypassed by attackers." },
+                { name: "Weak Password Storage", details: "Weak password storage is when a web application stores passwords in an insecure manner, such as plain text or using weak hashing algorithms." },
+                { name: "Password Cracking", details: "Password cracking is an attack where an attacker attempts to guess or brute-force a user's password." },
+                { name: "Session Hijacking", details: "Session hijacking is an attack where an attacker takes over a user's session by stealing their session cookie." },
+                { name: "Brute Force Attack", details: "A brute force attack is an attack where an attacker attempts to guess a user's password by trying all possible combinations." },
+                { name: "Session Fixation", details: "Session fixation is an attack where an attacker sets a user's session identifier to one known by the attacker, allowing the attacker to hijack the user's session." }
             ],
             "Sensitive Data Exposure": [
-                "Inadequate Encryption",
-                "Insecure Direct Object References (IDOR)",
-                "Data Leakage",
-                "Unencrypted Data Storage",
-                "Missing Security Headers",
-                "Insecure File Handling"
+                { name: "Inadequate Encryption", details: "Inadequate encryption is when a web application uses weak encryption algorithms or does not encrypt sensitive data at all." },
+                { name: "Insecure Direct Object References (IDOR)", details: "IDOR is an attack where an attacker can access unauthorized data by manipulating the value of a parameter used to directly access an object." },
+                { name: "Data Leakage", details: "Data leakage is when a web application unintentionally exposes sensitive data to unauthorized users." },
+                { name: "Unencrypted Data Storage", details: "Unencrypted data storage is when a web application stores sensitive data in an unencrypted format." },
+                { name: "Missing Security Headers", details: "Missing security headers are when a web application does not include security headers that can help protect against attacks." },
+                { name: "Insecure File Handling", details: "Insecure file handling is when a web application improperly handles file uploads or downloads, leading to vulnerabilities such as path traversal or arbitrary file upload." }
             ],
             "Security Misconfiguration": [
-                "Default Passwords",
-                "Directory Listing",
-                "Unprotected API Endpoints",
-                "Open Ports and Services",
-                "Improper Access Controls",
-                "Information Disclosure",
-                "Unpatched Software",
-                "Misconfigured CORS",
-                "HTTP Security Headers Misconfiguration"
+                { name: "Default Passwords", details: "Default passwords are the default credentials provided by manufacturers for devices and applications, which can be easily guessed by attackers." },
+                { name: "Directory Listing", details: "Directory listing is a misconfiguration where a web server lists the contents of a directory, potentially exposing sensitive files." },
+                { name: "Unprotected API Endpoints", details: "Unprotected API endpoints are API endpoints that do not have proper authentication and authorization mechanisms in place, allowing unauthorized access." },
+                { name: "Open Ports and Services", details: "Open ports and services are network ports and services that are accessible over the internet and can be exploited by attackers if not properly secured." },
+                { name: "Improper Access Controls", details: "Improper access controls are when a web application does not properly restrict access to sensitive data or functionality." },
+                { name: "Information Disclosure", details: "Information disclosure is when a web application unintentionally exposes sensitive information, such as error messages or debug information." },
+                { name: "Unpatched Software", details: "Unpatched software is software that has known vulnerabilities but has not been updated with the latest security patches." },
+                { name: "Misconfigured CORS", details: "Misconfigured CORS is when a web application improperly configures Cross-Origin Resource Sharing (CORS), allowing unauthorized access to resources." },
+                { name: "HTTP Security Headers Misconfiguration", details: "HTTP security headers misconfiguration is when a web application does not properly configure security headers, leaving it vulnerable to attacks." }
             ],
             "XML-Related Vulnerabilities": [
-                "XML Bomb",
-                "XML Entity Expansion (XEE)",
-                "XML External Entity (XXE) Injection"
+                { name: "XML Bomb", details: "An XML bomb is a type of denial-of-service attack that exploits XML parsers with a large number of nested XML entities." },
+                { name: "XML Entity Expansion (XEE)", details: "XML Entity Expansion (XEE) is an attack where an attacker exploits XML entity expansion to cause a denial of service or execute arbitrary code." },
+                { name: "XML External Entity (XXE) Injection", details: "XXE Injection is an attack where an attacker exploits a vulnerable XML parser to execute arbitrary code or read arbitrary files." }
             ],
             "Broken Access Control": [
-                "Inadequate Authorization",
-                "Privilege Escalation",
-                "Insecure Direct Object References",
-                "Forceful Browsing",
-                "Missing Function-Level Access Control"
+                { name: "Inadequate Authorization", details: "Inadequate authorization is when a web application does not properly restrict access to sensitive data or functionality based on user roles." },
+                { name: "Privilege Escalation", details: "Privilege escalation is an attack where an attacker gains higher-level privileges than they are authorized for." },
+                { name: "Insecure Direct Object References", details: "Insecure direct object references are when a web application provides direct access to objects based on user-supplied input, allowing unauthorized access." },
+                { name: "Forceful Browsing", details: "Forceful browsing is an attack where an attacker manually navigates to unauthorized pages by manipulating the URL." },
+                { name: "Missing Function-Level Access Control", details: "Missing function-level access control is when a web application does not properly restrict access to sensitive functions based on user roles." }
             ],
             "Insecure Deserialization": [
-                "Object Injection",
-                "Data Tampering",
-                "Remote Code Execution via Deserialization"
+                { name: "Object Injection", details: "Object injection is an attack where an attacker manipulates serialized objects to execute arbitrary code or gain unauthorized access." },
+                { name: "Data Tampering", details: "Data tampering is an attack where an attacker manipulates data in transit or at rest to gain unauthorized access or perform malicious actions." },
+                { name: "Remote Code Execution via Deserialization", details: "Remote code execution via deserialization is an attack where an attacker exploits a vulnerable deserialization process to execute arbitrary code." }
             ],
             "API Security Issues": [
-                "Inadequate Input Validation",
-                "Lack of Rate Limiting",
-                "API Key Exposure",
-                "Insecure API Endpoints"
+                { name: "Inadequate Input Validation", details: "Inadequate input validation is when a web application does not properly validate user input, allowing attackers to exploit vulnerabilities such as injection attacks." },
+                { name: "Lack of Rate Limiting", details: "Lack of rate limiting is when a web application does not restrict the number of requests a user can make, allowing attackers to perform denial-of-service attacks." },
+                { name: "API Key Exposure", details: "API key exposure is when an API key is exposed in a web application, allowing unauthorized access to the API." },
+                { name: "Insecure API Endpoints", details: "Insecure API endpoints are API endpoints that do not have proper authentication and authorization mechanisms in place, allowing unauthorized access." }
             ],
             "Insecure Communication": [
-                "Man-in-the-Middle (MITM) Attack",
-                "Insufficient Transport Layer Security",
-                "Insecure SSL/TLS Configuration",
-                "Insecure Communication Protocols"
+                { name: "Man-in-the-Middle (MITM) Attack", details: "A MITM attack is when an attacker intercepts and manipulates communication between two parties without their knowledge." },
+                { name: "Insufficient Transport Layer Security", details: "Insufficient transport layer security is when a web application does not use proper encryption for communication, allowing attackers to intercept and manipulate data." },
+                { name: "Insecure SSL/TLS Configuration", details: "Insecure SSL/TLS configuration is when a web application uses weak or outdated encryption protocols, allowing attackers to intercept and manipulate data." },
+                { name: "Insecure Communication Protocols", details: "Insecure communication protocols are protocols that do not use proper encryption or authentication, allowing attackers to intercept and manipulate data." }
             ],
             "Client-Side Vulnerabilities": [
-                "HTML5 Security Issues",
-                "Clickjacking",
-                "Browser Cache Poisoning",
-                "Insecure Cross-Origin Communication",
-                "DOM-based XSS"
+                { name: "HTML5 Security Issues", details: "HTML5 security issues are vulnerabilities in HTML5 features that can be exploited by attackers to perform malicious actions." },
+                { name: "Clickjacking", details: "Clickjacking is an attack where an attacker tricks a user into clicking on a malicious link by overlaying it on a legitimate page." },
+                { name: "Browser Cache Poisoning", details: "Browser cache poisoning is an attack where an attacker injects malicious content into a user's browser cache, which is then served to the user in subsequent requests." },
+                { name: "Insecure Cross-Origin Communication", details: "Insecure cross-origin communication is when a web application does not properly restrict communication between different origins, allowing attackers to perform malicious actions." },
+                { name: "DOM-based XSS", details: "DOM-based XSS is a type of XSS attack where the vulnerability is in the client-side code rather than the server-side code." }
             ],
             "Denial of Service (DoS)": [
-                "Distributed Denial of Service",
-                "Application Layer DoS",
-                "Resource Exhaustion",
-                "Slowloris Attack",
-                "XML Denial of Service"
+                { name: "Distributed Denial of Service", details: "A distributed denial-of-service (DDoS) attack is when multiple systems flood the bandwidth or resources of a targeted system, causing it to become unavailable." },
+                { name: "Application Layer DoS", details: "An application layer DoS attack is when an attacker targets the application layer of the OSI model, causing the application to become unavailable." },
+                { name: "Resource Exhaustion", details: "Resource exhaustion is an attack where an attacker consumes all available resources of a system, causing it to become unavailable." },
+                { name: "Slowloris Attack", details: "A Slowloris attack is when an attacker sends partial HTTP requests to a server, keeping the connections open for as long as possible, causing the server to become unavailable." },
+                { name: "XML Denial of Service", details: "XML denial of service is an attack where an attacker sends malicious XML to a server, causing the server to become unavailable." }
             ],
             "Other Web Vulnerabilities": [
-                "Server-Side Request Forgery (SSRF)",
-                "HTTP Parameter Pollution (HPP)",
-                "Insecure Redirects and Forwards",
-                "File Inclusion Vulnerabilities",
-                "Security Header Bypass",
-                "Clickjacking",
-                "Inadequate Session Timeout",
-                "Insufficient Logging and Monitoring",
-                "Business Logic Vulnerabilities",
-                "API Abuse"
+                { name: "Server-Side Request Forgery (SSRF)", details: "SSRF is an attack where an attacker tricks a server into making a request to a resource that the attacker cannot directly access." },
+                { name: "HTTP Parameter Pollution (HPP)", details: "HPP is an attack where an attacker sends multiple HTTP parameters with the same name, causing the server to process them in an unexpected manner." },
+                { name: "Insecure Redirects and Forwards", details: "Insecure redirects and forwards are when a web application redirects or forwards users to an untrusted location, allowing attackers to perform malicious actions." },
+                { name: "File Inclusion Vulnerabilities", details: "File inclusion vulnerabilities are when a web application includes a file based on user input, allowing attackers to include malicious files." },
+                { name: "Security Header Bypass", details: "Security header bypass is when an attacker bypasses security headers by manipulating the request or response headers." },
+                { name: "Clickjacking", details: "Clickjacking is an attack where an attacker tricks a user into clicking on a malicious link by overlaying it on a legitimate page." },
+                { name: "Inadequate Session Timeout", details: "Inadequate session timeout is when a web application does not properly expire sessions, allowing attackers to reuse them." },
+                { name: "Insufficient Logging and Monitoring", details: "Insufficient logging and monitoring is when a web application does not properly log and monitor activity, allowing attacks to go undetected." },
+                { name: "Business Logic Vulnerabilities", details: "Business logic vulnerabilities are weaknesses in the logic of a web application that can be exploited by attackers to perform malicious actions." },
+                { name: "API Abuse", details: "API abuse is when an attacker exploits weaknesses in an API to perform malicious actions." }
             ],
             "Mobile Web Vulnerabilities": [
-                "Insecure Data Storage on Mobile Devices",
-                "Insecure Data Transmission on Mobile Devices",
-                "Insecure Mobile API Endpoints",
-                "Mobile App Reverse Engineering"
+                { name: "Insecure Data Storage on Mobile Devices", details: "Insecure data storage on mobile devices is when a mobile application stores sensitive data in an insecure manner, such as plain text." },
+                { name: "Insecure Data Transmission on Mobile Devices", details: "Insecure data transmission on mobile devices is when a mobile application transmits sensitive data in an insecure manner, such as without encryption." },
+                { name: "Insecure Mobile API Endpoints", details: "Insecure mobile API endpoints are API endpoints that do not have proper authentication and authorization mechanisms in place, allowing unauthorized access." },
+                { name: "Mobile App Reverse Engineering", details: "Mobile app reverse engineering is when an attacker analyzes the binary code of a mobile application to discover vulnerabilities and exploit them." }
             ],
             "IoT Web Vulnerabilities": [
-                "Insecure IoT Device Management",
-                "Weak Authentication on IoT Devices",
-                "IoT Device Vulnerabilities"
+                { name: "Insecure IoT Device Management", details: "Insecure IoT device management is when IoT devices are managed in an insecure manner, allowing attackers to exploit vulnerabilities." },
+                { name: "Weak Authentication on IoT Devices", details: "Weak authentication on IoT devices is when IoT devices use weak authentication mechanisms, allowing attackers to gain unauthorized access." },
+                { name: "IoT Device Vulnerabilities", details: "IoT device vulnerabilities are weaknesses in IoT devices that can be exploited by attackers to perform malicious actions." }
             ],
             "Web of Things (WOT) Vulnerabilities": [
-                "IoT Data Privacy Issues",
-                "Unauthorized Access to Smart Homes"
+                { name: "IoT Data Privacy Issues", details: "IoT data privacy issues are when IoT devices do not properly protect the privacy of user data, allowing attackers to access sensitive information." },
+                { name: "Unauthorized Access to Smart Homes", details: "Unauthorized access to smart homes is when attackers gain unauthorized access to smart home devices and systems." }
             ],
             "Authentication Bypass": [
-                "Insecure 'Remember Me' Functionality",
-                "CAPTCHA Bypass"
+                { name: "Insecure 'Remember Me' Functionality", details: "Insecure 'Remember Me' functionality is when a web application implements the 'Remember Me' feature in an insecure manner, allowing attackers to gain unauthorized access." },
+                { name: "CAPTCHA Bypass", details: "CAPTCHA bypass is when attackers use automated tools to bypass CAPTCHA challenges." }
             ],
             "Server-Side Request Forgery (SSRF)": [
-                "Blind SSR",
-                "Time-Based Blind SSRF"
+                { name: "Blind SSRF", details: "Blind SSRF is an attack where an attacker tricks a server into making a request to a resource that the attacker cannot directly access, without seeing the response." },
+                { name: "Time-Based Blind SSRF", details: "Time-based blind SSRF is an attack where an attacker infers information about a resource based on the time it takes for a server to respond." }
             ],
             "Content Spoofing": [
-                "MIME Sniffing",
-                "X-Content-Type-Options Bypass",
-                "Content Security Policy (CSP) Bypass"
+                { name: "MIME Sniffing", details: "MIME sniffing is an attack where an attacker tricks a browser into interpreting a file as a different MIME type than intended." },
+                { name: "X-Content-Type-Options Bypass", details: "X-Content-Type-Options bypass is an attack where an attacker bypasses the X-Content-Type-Options header to perform malicious actions." },
+                { name: "Content Security Policy (CSP) Bypass", details: "CSP bypass is an attack where an attacker bypasses the Content Security Policy of a web application to perform malicious actions." }
             ],
             "Business Logic Flaws": [
-                "Inconsistent Validation",
-                "Race Conditions",
-                "Order Processing Vulnerabilities",
-                "Price Manipulation",
-                "Account Enumeration",
-                "User-Based Flaws"
+                { name: "Inconsistent Validation", details: "Inconsistent validation is a flaw where a web application inconsistently validates input, allowing attackers to exploit vulnerabilities." },
+                { name: "Race Conditions", details: "Race conditions are flaws where the outcome of a process depends on the timing of events, allowing attackers to exploit vulnerabilities." },
+                { name: "Order Processing Vulnerabilities", details: "Order processing vulnerabilities are flaws in the logic of an order processing system that can be exploited by attackers." },
+                { name: "Price Manipulation", details: "Price manipulation is a flaw where an attacker can manipulate the price of an item in a web application." },
+                { name: "Account Enumeration", details: "Account enumeration is a flaw where an attacker can determine valid usernames or email addresses in a web application." },
+                { name: "User-Based Flaws", details: "User-based flaws are weaknesses in the logic of a web application that can be exploited by attackers to perform malicious actions." }
             ],
             "Zero-Day Vulnerabilities": [
-                "Unknown Vulnerabilities",
-                "Unpatched Vulnerabilities",
-                "Day-Zero Exploits"
+                { name: "Unknown Vulnerabilities", details: "Unknown vulnerabilities are security weaknesses that are not yet known to the vendor or the public." },
+                { name: "Unpatched Vulnerabilities", details: "Unpatched vulnerabilities are known security weaknesses that have not been patched by the vendor." },
+                { name: "Day-Zero Exploits", details: "Day-zero exploits are attacks that exploit vulnerabilities on the same day they are discovered." }
             ],
             "Security Risks": [
-                "Cross-origin resource sharing (CORS)",
-                "HTTP request smuggling",
-                "Path traversal",
-                "Access control vulnerabilities",
-                "WebSockets",
-                "Web cache poisoning",
-                "HTTP Host header attacks",
-                "OAuth authentication",
-                "File upload vulnerabilities",
-                "JWT",
-                "Prototype pollution",
-                "GraphQL API vulnerabilities",
-                "Race conditions",
-                "NoSQL injection",
-                "API testing"
+                { name: "Cross-origin resource sharing (CORS)", details: "CORS is a mechanism that allows web applications to control the sharing of resources across different origins." },
+                { name: "HTTP request smuggling", details: "HTTP request smuggling is an attack where an attacker tricks a web server into processing multiple requests simultaneously, allowing them to bypass security controls." },
+                { name: "Path traversal", details: "Path traversal is an attack where an attacker manipulates the file path to access files outside the intended directory." },
+                { name: "Access control vulnerabilities", details: "Access control vulnerabilities are weaknesses in the mechanisms used to restrict access to sensitive data and functionality." },
+                { name: "WebSockets", details: "WebSockets are a technology that allows for real-time communication between a web browser and a server, which can be exploited if not properly secured." },
+                { name: "Web cache poisoning", details: "Web cache poisoning is an attack where an attacker manipulates the cache of a web server to serve malicious content to users." },
+                { name: "HTTP Host header attacks", details: "HTTP Host header attacks are attacks where an attacker manipulates the Host header of an HTTP request to perform malicious actions." },
+                { name: "OAuth authentication", details: "OAuth authentication is a standard for secure authorization that can be exploited if not properly implemented." },
+                { name: "File upload vulnerabilities", details: "File upload vulnerabilities are weaknesses in the handling of file uploads that can be exploited by attackers to upload malicious files." },
+                { name: "JWT", details: "JWT (JSON Web Token) is a standard for secure data exchange that can be exploited if not properly implemented." },
+                { name: "Prototype pollution", details: "Prototype pollution is an attack where an attacker manipulates the prototype of a JavaScript object to perform malicious actions." },
+                { name: "GraphQL API vulnerabilities", details: "GraphQL API vulnerabilities are weaknesses in the implementation of GraphQL APIs that can be exploited by attackers." },
+                { name: "Race conditions", details: "Race conditions are flaws where the outcome of a process depends on the timing of events, allowing attackers to exploit vulnerabilities." },
+                { name: "NoSQL injection", details: "NoSQL injection is an attack where an attacker manipulates NoSQL queries to perform malicious actions." },
+                { name: "API testing", details: "API testing is the process of testing APIs for security weaknesses, which can be exploited if not properly secured." }
             ]
         };
 
@@ -286,13 +324,22 @@
                 vulnerabilities[category].forEach(vuln => {
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `
-                        <label for="vuln-${vulnIndex}">${vuln}</label>
+                        <label for="vuln-${vulnIndex}" onclick="showDetails('${vuln.details}')">${vuln.name}</label>
                         <input type="checkbox" id="vuln-${vulnIndex}" data-category="${category}" onchange="updateProgress()">
                     `;
                     vulnList.appendChild(listItem);
                     vulnIndex++;
                 });
             }
+        }
+
+        function showDetails(details) {
+            document.getElementById('detail-content').value = details;
+            document.getElementById('detail-popup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('detail-popup').style.display = 'none';
         }
 
         function updateProgress() {
